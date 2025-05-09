@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -34,13 +35,20 @@ fun CategoryScreen(onClick : (category: String) -> Unit) {
     val categoryViewmodel : CategoryViewmodel = hiltViewModel()
     val categories = categoryViewmodel.categories.collectAsState()
 
-    LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp),
-        verticalArrangement = Arrangement.SpaceAround
-    ) {
-        items(categories.value.distinct()) {
-            CategoryItem(category = it, onClick)
+    if(categories.value.isEmpty()) {
+        Box(modifier = Modifier.fillMaxSize(1f),
+            contentAlignment = Alignment.Center) {
+            Text(text = "Loading...",style = MaterialTheme.typography.headlineSmall)
+        }
+    } else {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            contentPadding = PaddingValues(8.dp),
+            verticalArrangement = Arrangement.SpaceAround
+        ) {
+            items(categories.value.distinct()) {
+                CategoryItem(category = it, onClick)
+            }
         }
     }
 
@@ -56,7 +64,8 @@ fun CategoryItem(category: String,onClick : (category: String) -> Unit) {
         }
         .size(160.dp)
         .clip(RoundedCornerShape(8.dp))
-        .paint(painter = painterResource(id = R.drawable.bg),
+        .paint(
+            painter = painterResource(id = R.drawable.bg),
             contentScale = ContentScale.Crop
         )
         .border(1.dp, Color(0xFFEEEEEE)),
